@@ -12,16 +12,66 @@
     <div class="chat-container">
         <h2>Chat WebSocket</h2>
         <div id="status" class="disconnected">Desconectado</div>
+
+        <!-- 1. Fila de conexion -->
         <div class="connection-controls">
-            <input type="text" id="serverIp" placeholder="IP del servidor" value="localhost">
+            <input type="text" id="serverIp" placeholder="Host" value="localhost">
             <input type="text" id="username" placeholder="Usuario" value="Usuario">
             <button onclick="connect()">Conectar</button>
             <button onclick="disconnect()">Desconectar</button>
         </div>
+
+        <!-- 2. Radio buttons para elegir el modo de envio (Privado por defecto) -->
+        <div class="mode-controls">
+            <label>
+                <input type="radio" name="modo" id="modoPrivadoRadio" value="privado" checked onchange="setModo('privado')">
+                Privado
+            </label>
+            <label>
+                <input type="radio" name="modo" id="modoPublicoRadio" value="publico" onchange="setModo('publico')">
+                Publico
+            </label>
+        </div>
+
+        <!-- 3. Input Destinatario: solo se ve/usa en modo Privado -->
+        <input type="text" id="destinatario" class="destinatario-input" placeholder="Destinatario">
+
+        <!-- 4. Botones que hacen lo mismo que los radios (no envian mensaje) -->
+        <div class="mode-buttons">
+            <button type="button" id="btnModoPublico" onclick="setModo('publico')">Publico</button>
+            <button type="button" id="btnModoPrivado" onclick="setModo('privado')">Privado</button>
+        </div>
+
+        <!-- 5. Lista de mensajes recibidos -->
         <div id="messages"></div>
+
+        <!-- 6. Unico input/boton que dispara el envio real -->
         <div class="message-controls">
             <input type="text" id="message" placeholder="Escribe un mensaje...">
             <button onclick="sendMessage()">Enviar</button>
+        </div>
+
+        <!-- Videollamada (WebRTC): funcionalidad aparte del chat de texto,
+             usa el mismo WebSocket/STOMP solo como canal de señalizacion -->
+        <div class="call-section">
+            <h3>Videollamada</h3>
+
+            <div class="call-controls">
+                <input type="text" id="callTarget" placeholder="Usuario a llamar">
+                <button type="button" onclick="iniciarLlamada()">Llamar</button>
+                <button type="button" id="btnColgar" onclick="colgarLlamada()" hidden>Colgar</button>
+            </div>
+
+            <div id="incomingCall" class="incoming-call" hidden>
+                <span id="incomingCallText"></span>
+                <button type="button" onclick="aceptarLlamada()">Aceptar</button>
+                <button type="button" onclick="rechazarLlamada()">Rechazar</button>
+            </div>
+
+            <div class="video-grid">
+                <video id="localVideo" autoplay playsinline muted></video>
+                <video id="remoteVideo" autoplay playsinline></video>
+            </div>
         </div>
     </div>
 

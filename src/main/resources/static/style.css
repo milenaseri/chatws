@@ -44,6 +44,11 @@ h2 {
 .message strong {
     color: #333;
 }
+.message-privado {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+    padding-left: 8px;
+}
 .connection-controls {
     display: flex;
     flex-wrap: wrap;
@@ -53,6 +58,36 @@ h2 {
 .connection-controls input[type="text"] {
     flex: 1;
     min-width: 120px;
+}
+.mode-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.mode-controls label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.destinatario-input {
+    width: 100%;
+    margin-bottom: 8px;
+}
+.destinatario-input[hidden] {
+    display: none;
+}
+.mode-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.mode-buttons button {
+    background-color: #6c757d;
+}
+.mode-buttons button.active {
+    background-color: #007bff;
 }
 .message-controls {
     display: flex;
@@ -94,6 +129,59 @@ button:hover {
     background-color: #f8d7da;
     color: #721c24;
 }
+.call-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+.call-section h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+}
+.call-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.call-controls input[type="text"] {
+    flex: 1;
+    min-width: 120px;
+}
+#btnColgar {
+    background-color: #dc3545;
+}
+#btnColgar:hover {
+    background-color: #a71d2a;
+}
+.incoming-call {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 10px;
+    background-color: #d1ecf1;
+    border-radius: 6px;
+}
+.incoming-call span {
+    flex: 1;
+    font-weight: 500;
+}
+.video-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.video-grid video {
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 4 / 3;
+    background-color: #000;
+    border-radius: 6px;
+    flex: 1;
+    min-width: 200px;
+}
 @media (max-width: 600px) {
     body {
         padding: 5px;
@@ -122,6 +210,16 @@ button:hover {
     .message-controls input[type="text"],
     .message-controls button {
         width: 100%;
+    }
+    .call-controls {
+        flex-direction: column;
+    }
+    .call-controls input[type="text"],
+    .call-controls button {
+        width: 100%;
+    }
+    .video-grid video {
+        max-width: 100%;
     }
     button {
         padding: 14px 20px;
