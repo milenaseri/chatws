@@ -1,0 +1,12 @@
+# RabbitMQ con el plugin STOMP habilitado (lo necesita enableStompBrokerRelay).
+# Levantar con: docker compose up -d
+# Panel de administración: http://localhost:15672 (guest / guest)
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: chatws-rabbitmq
+    command: sh -c "rabbitmq-plugins enable --offline rabbitmq_stomp && rabbitmq-server"
+    ports:
+      - "5672:5672"     # AMQP
+      - "61613:61613"   # STOMP
+      - "15672:15672"   # Panel web

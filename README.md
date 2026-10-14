@@ -326,30 +326,36 @@ Cliente → @MessageMapping → Método del Controller → @SendTo → Topic →
 ## 🚀 Ejecución del Proyecto
 
 ### Requisitos Previos
-- Java 26 o superior
+- Java 21 o superior
 - Maven 3.6+
+- Docker (para RabbitMQ) o RabbitMQ instalado con el plugin STOMP
 - Navegador web moderno
 
 ### Pasos para Ejecutar
 
 1. **Clonar o descargar el proyecto**
 
-2. **Compilar el proyecto:**
+2. **Levantar RabbitMQ** (ver [Migración a RabbitMQ](#-migración-a-rabbitmq)):
+   ```bash
+   docker compose up -d
+   ```
+
+3. **Compilar el proyecto:**
    ```bash
    ./mvnw clean install
    ```
 
-3. **Ejecutar el servidor:**
+4. **Ejecutar el servidor:**
    ```bash
    ./mvnw spring-boot:run
    ```
 
-4. **Abrir el cliente web:**
+5. **Abrir el cliente web:**
    - Navegar a `http://localhost:8080/index.html`
    - Ingresar nombre de usuario
    - Hacer clic en "Conectar"
 
-5. **Probar el cliente Java (opcional):**
+6. **Probar el cliente Java (opcional):**
    ```bash
    # Ejecutar la clase ChatBrowser
    java -cp target/classes:target/dependency/* org.example.chatws.utility.ChatBrowser
@@ -361,6 +367,43 @@ Cliente → @MessageMapping → Método del Controller → @SendTo → Topic →
 2. Conecta cada una con diferentes nombres de usuario
 3. Envía mensajes desde una pestaña
 4. Observa cómo los mensajes aparecen en todas las pestañas en tiempo real
+
+---
+
+## 🐇 Migración a RabbitMQ
+
+El broker en memoria (`enableSimpleBroker`) se reemplazó por **RabbitMQ** usando `enableStompBrokerRelay`: Spring ya no guarda las suscripciones, sino que reenvía los frames STOMP de `/topic` y `/queue` al plugin STOMP de RabbitMQ.
+
+```
+Cliente A ─┐                                   ┌─► Instancia 8080 ─► Cliente C
+           ├─► Instancia 8080 ─► RabbitMQ ─────┤
+Cliente B ─┘   (relay STOMP)     (61613)       └─► Instancia 8081 ─► Cliente D
+```
+
+**Cambios realizados:**
+1. `pom.xml`: `spring-boot-starter-amqp` y `reactor-netty` (cliente TCP que usa el relay).
+2. `WebSocketConfig.java`: `enableStompBrokerRelay(TOPIC, QUEUE)` con host, puerto y credenciales leídos de `application.yaml`.
+3. `application.yaml`: configuración `spring.rabbitmq` y `chat.rabbitmq.stomp-port: 61613`.
+4. `compose.yaml`: RabbitMQ con los puertos 5672 (AMQP), 61613 (STOMP) y 15672 (panel web) y el plugin `rabbitmq_stomp` habilitado.
+
+**Cómo se mapean los destinos en RabbitMQ:**
+- `/topic/public` → exchange `amq.topic` con routing key `public` (broadcast a todos).
+- `/queue/{usuario}` → cola con el nombre del usuario (mensajes privados). Si el usuario está desconectado, los mensajes quedan en su cola y le llegan al reconectarse.
+
+**Levantar RabbitMQ:**
+```bash
+docker compose up -d
+```
+Panel de administración: http://localhost:15672 (usuario `guest`, contraseña `guest`).
+
+Sin Docker (macOS): `brew install rabbitmq`, `rabbitmq-plugins enable rabbitmq_stomp` y `brew services start rabbitmq`.
+
+**Probar varias instancias:**
+```bash
+./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
+```
+Abrir `http://localhost:8080` y `http://localhost:8081`, en el segundo poner `localhost:8081` como servidor. Los mensajes enviados en una instancia llegan a los clientes de la otra.
 
 ---
 

@@ -3,7 +3,9 @@ let stompClient = null;
 function connect() {
     const serverIp = document.getElementById('serverIp').value;
     const username = document.getElementById('username').value;
-    const socket = new SockJS('http://' + serverIp + ':8080/chat');
+    // Acepta "ip" (usa el puerto 8080) o "ip:puerto" para conectarse a otra instancia del servidor
+    const host = serverIp.includes(':') ? serverIp : serverIp + ':8080';
+    const socket = new SockJS('http://' + host + '/chat');
     stompClient = Stomp.over(socket);
     
     stompClient.connect({}, function (frame) {

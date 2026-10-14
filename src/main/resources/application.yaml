@@ -1,3 +1,13 @@
 spring:
   application:
     name: chatws
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+chat:
+  rabbitmq:
+    # Puerto del plugin STOMP de RabbitMQ (rabbitmq_stomp), usado por enableStompBrokerRelay
+    stomp-port: 61613
